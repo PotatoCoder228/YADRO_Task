@@ -18,12 +18,19 @@ namespace TestApp {
 
         void calcAllCells();
 
+        double calculate(std::string &expr);
+
     private:
+        struct tableIndex {
+        public:
+            size_t column;
+            size_t row;
+        };
         std::vector<std::vector<std::string>> table;
         std::map<std::string, size_t> columns;
         std::map<size_t, size_t> rows;
         std::vector<size_t> rowsNames;
-        std::vector<std::shared_ptr<std::string>> calcCells;
+        std::vector<tableIndex> calcCells;
         std::string hack;
     };
 

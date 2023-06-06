@@ -16,8 +16,8 @@ namespace TestApp {
 
         TestApp::CsvTable table;
         table.parseCsvTable(file);
+        table.calcAllCells();
         table.printAsCsv();
-
         this->file.close();
         return EXIT_SUCCESS;
     }
