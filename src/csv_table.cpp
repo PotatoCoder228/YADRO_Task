@@ -2,7 +2,7 @@
 // Created by sasha on 03.06.2023.
 //
 
-#include "csv_table.h"
+#include "../include/csv_table.h"
 
 namespace test_app {
 
@@ -267,17 +267,17 @@ namespace test_app {
                         moveChain();
                         queue_length--;
                         if (queue_length == 0) {
-                            throw invalid_argument("Recursive call chain detected!");
+                            throw invalid_argument("Recursive call chain detected!\nFormula:" + expr);
                         }
                         continue;
                     }
                     table[cell.row][cell.column] = format_double(std::to_string(value));
                 }
-            } catch (invalid_argument e) {
+            } catch (invalid_argument &e) {
                 cout << e.what() << endl;
                 cout << "The calculation error, something cell contains incorrect formula/number" << endl;
                 return false;
-            } catch (out_of_range e) {
+            } catch (out_of_range &e) {
                 cout << "The calculation error, something cell contains a value that is out of range!"
                      << endl;
                 return false;

@@ -5,7 +5,7 @@
 #ifndef YADRO_TASK_CSV_TABLE_H
 #define YADRO_TASK_CSV_TABLE_H
 
-#include "../include/all_headers.h"
+#include "all_headers.h"
 
 namespace test_app {
 
