@@ -5,15 +5,15 @@
 #ifndef YADRO_TASK_APP_H
 #define YADRO_TASK_APP_H
 
-#include "allheaders.h"
+#include "all_headers.h"
 
-namespace TestApp {
+namespace test_app {
 
-    class App {
+    class app {
     public:
-        explicit App(char *filename) noexcept;
+        explicit app(char *filename) noexcept;
 
-        ~App() = default;
+        ~app() = default;
 
         int start();
 
