@@ -12,6 +12,11 @@
  * */
 
 int main(int argc, char *argv[]) {
+    char *checker = std::setlocale(LC_ALL, "en-EN.UTF-8");
+    if (checker == nullptr) {
+        checker = std::setlocale(LC_ALL, "C.UTF-8");
+    }
+
     using std::cout;
     using std::endl;
 

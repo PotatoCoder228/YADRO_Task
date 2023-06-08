@@ -18,7 +18,7 @@ namespace test_app {
         int start();
 
     private:
-        std::fstream file;
+        std::wfstream file;
     };
 
 } // TestApp

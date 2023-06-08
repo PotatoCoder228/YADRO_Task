@@ -12,5 +12,9 @@
 #include <vector>
 #include <map>
 #include <deque>
+#include <sstream>
+#include <iterator>
+#include <ostream>
+#include <codecvt>
 
 #endif //YADRO_TASK_ALL_HEADERS_H

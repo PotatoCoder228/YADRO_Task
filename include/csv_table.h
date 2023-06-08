@@ -11,7 +11,7 @@ namespace test_app {
 
     class csv_table {
     public:
-        bool parse_from_csv(std::fstream &file);
+        bool parse_from_csv(std::wfstream &file);
 
         void print_as_csv() const;
 
@@ -24,18 +24,18 @@ namespace test_app {
             std::size_t row;
         };
 
-        double calc(const std::string &expr);
+        double calc(const std::wstring &expr);
 
-        static double cell_operation(double arg_1, double arg_2, std::string &op);
+        static double cell_operation(double arg_1, double arg_2, std::wstring &op);
 
         void moveChain();
 
-        std::vector<std::vector<std::string>> table;
-        std::map<std::string, std::size_t> columns;
+        std::vector<std::vector<std::wstring>> table;
+        std::map<std::wstring, std::size_t> columns;
         std::map<std::size_t, std::size_t> rows;
         std::vector<std::size_t> rows_names;
         std::deque<table_ptr> calc_queue;
-        std::string clmns_line_buf;
+        std::wstring clmns_line_buf;
         std::size_t calc_depth;
         const std::size_t MAX_DEPTH = 2000;
     };
