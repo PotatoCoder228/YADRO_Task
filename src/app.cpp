@@ -38,14 +38,6 @@ namespace test_app {
     }
 
     app::app(char *filename) noexcept: file(filename, std::ios_base::in) {
-        try {
-            try {
-                file.imbue(std::locale("en-EN.UTF-8"));
-            } catch (std::runtime_error &e) {
-                file.imbue(std::locale("C.UTF-8"));
-            }
-        } catch (std::runtime_error &e) {
-            std::cout << "Cannot set UTF-8 and locale for file stream" << std::endl;
-        }
+        file.imbue(std::locale(std::locale(""), new std::codecvt_utf8<wchar_t>));
     }
 } // TestApp

@@ -24,7 +24,14 @@ namespace test_app {
     }
 
     static std::wstring format_double(const std::wstring &str) {
-        if (str.find(TXT('.')) != std::wstring::npos) return str.substr(0, str.find(TXT('.')));
+        size_t index = 0;
+        for (size_t i = 0; i < str.size(); i++) {
+            if (str[i] == L'.' || str[i] == L',') {
+                index = i;
+                break;
+            }
+        }
+        if (index != 0) return str.substr(0, index);
         else return str;
     }
 
@@ -113,7 +120,6 @@ namespace test_app {
     void csv_table::print_as_csv() const {
         using std::wcout;
         using std::endl;
-        //wcout.imbue(std::locale(std::locale(), new std::codecvt<wchar_t, char, std::mbstate_t>));
         wcout << clmns_line_buf << endl;
         for (size_t i = 0; i < table.size(); i++) {
             wcout << rows_names[i];
