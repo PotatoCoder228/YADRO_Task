@@ -7,13 +7,22 @@
 
 namespace test_app {
 
-    int app::start() {
+    int app::start(const char *filename) {
         using std::invalid_argument;
         using std::out_of_range;
         using std::cout;
         using std::endl;
 
-        if (!(file.is_open())) {
+        std::shared_ptr<std::wfstream> file_ptr(new std::wfstream(filename, std::ios::in), [](std::wfstream *f) {
+            if (f->is_open()) {
+                f->close();
+            }
+            delete f;
+        });
+
+        (*file_ptr).imbue(std::locale(std::locale(""), new std::codecvt_utf8<wchar_t>));
+
+        if (!(file_ptr->is_open())) {
             cout << "Cannot open target file." << endl;
             cout << "Program shut down..." << endl;
             return EXIT_FAILURE;
@@ -21,7 +30,7 @@ namespace test_app {
 
         try {
             csv_table table;
-            bool stat = table.parse_from_csv(file);
+            bool stat = table.parse_from_csv(*file_ptr);
             if (stat) stat = table.calc_cells();
             if (stat) table.print_as_csv();
             else cout << "The table not found" << endl;
@@ -33,11 +42,6 @@ namespace test_app {
             cout << "Cannot parse csv-table. Something row-number contains a value that is out of range!"
                  << endl;
         }
-        file.close();
         return EXIT_SUCCESS;
-    }
-
-    app::app(char *filename) noexcept: file(filename, std::ios_base::in) {
-        file.imbue(std::locale(std::locale(""), new std::codecvt_utf8<wchar_t>));
     }
 } // TestApp

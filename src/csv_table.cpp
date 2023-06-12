@@ -35,84 +35,101 @@ namespace test_app {
         else return str;
     }
 
+    bool csv_table::fill_clmns_names(std::wstring &cur_str, size_t &max_row_sz) {
+        using std::wstring;
+
+        if (cur_str[0] != TXT(',')) return false;
+        clmns_line_buf = cur_str;
+        clmns_line_buf.shrink_to_fit();
+        size_t prev = 1;
+        for (size_t j = 0; true; j++) {
+            size_t found_i = cur_str.find(TXT(','), prev);
+            if (found_i == wstring::npos) {
+                wstring buf = cur_str.substr(prev);
+                if (buf.empty()) return false;
+                columns[buf] = j;
+                max_row_sz++;
+                break;
+            }
+            wstring buf = cur_str.substr(prev, found_i - prev);
+            columns[buf] = j;
+            max_row_sz++;
+            prev = found_i + 1;
+        }
+        return true;
+    }
+
+    void csv_table::put_cell_value(std::wstring &buf, size_t &i) {
+        if (buf[0] == TXT('=')) {
+            table[i - 1].push_back(buf);
+            struct table_ptr ptr{};
+            ptr.column = table[i - 1].size() - 1;
+            ptr.row = i - 1;
+            calc_queue.push_front(ptr);
+        } else {
+            table[i - 1].push_back(buf);
+        }
+    }
+
+    void csv_table::put_row_num(std::wstring &buf, size_t &rows_counter) {
+        int64_t row_index = stoll(buf);
+        rows[row_index] = rows_counter;
+        std::vector<std::wstring> new_vector;
+        table.push_back(new_vector);
+        rows_counter++;
+        rows_names.push_back(row_index);
+    }
+
+    bool csv_table::put_value(std::wstring &cur_str, size_t &rows_counter, size_t &max_row_sz, size_t &i) {
+        using std::cout;
+        using std::endl;
+        using std::wstring;
+
+        size_t prev = 0;
+        for (size_t j = 0; true; j++) {
+            if (j > max_row_sz) {
+                cout << "The number of columns is less than the number of elements in a row" << endl;
+                return false;
+            }
+            size_t found_i = cur_str.find(TXT(','), prev);
+            if (found_i == wstring::npos) {
+                found_i = cur_str.size();
+                if (table.empty()) return false;
+            }
+            wstring buf = cur_str.substr(prev, found_i - prev);
+            if (buf.empty()) return false;
+            if (j == 0) {
+                put_row_num(buf, rows_counter);
+            } else {
+                put_cell_value(buf, i);
+                if (found_i == cur_str.size()) break;
+            }
+            prev = found_i + 1;
+        }
+        table.back().shrink_to_fit();
+        return true;
+    }
+
+
     bool csv_table::parse_from_csv(std::wfstream &file) {
 
         using std::size_t;
-        using std::wstring;
-        using std::cout;
-        using std::endl;
-        using std::stoll;
 
-        wstring cur_str;
+        std::wstring cur_str;
         size_t max_row_sz = 0;
         size_t rows_counter = 0;
         for (size_t i = 0; !file.eof(); i++) {
             get_format_line(file, cur_str);
             if (cur_str.empty()) break;
             if (i == 0) {
-                if (cur_str[0] != TXT(',')) return false;
-                clmns_line_buf = cur_str;
-                size_t prev = 1;
-                for (size_t j = 0; true; j++) {
-                    size_t found_i = cur_str.find(TXT(','), prev);
-                    if (found_i == wstring::npos) {
-                        wstring buf = cur_str.substr(prev);
-                        if (buf.empty()) return false;
-                        columns[buf] = j;
-                        max_row_sz++;
-                        break;
-                    }
-                    wstring buf = cur_str.substr(prev, found_i - prev);
-                    columns[buf] = j;
-                    max_row_sz++;
-                    prev = found_i + 1;
-                }
+                bool is_valid = csv_table::fill_clmns_names(cur_str, max_row_sz);
+                if (!is_valid) return false;
             } else {
-                size_t prev = 0;
-                for (size_t j = 0; true; j++) {
-                    if (j > max_row_sz) {
-                        cout << "The number of columns is less than the number of elements in a row" << endl;
-                        return false;
-                    }
-                    size_t found_i = cur_str.find(TXT(','), prev);
-                    if (found_i == wstring::npos) {
-                        wstring buf = cur_str.substr(prev, found_i - prev);
-                        if (table.empty() || buf.empty()) return false;
-                        if (buf[0] == TXT('=')) {
-                            table.back().push_back(buf);
-                            struct table_ptr cell{};
-                            cell.column = table[i - 1].size() - 1;
-                            cell.row = i - 1;
-                            calc_queue.push_front(cell);
-                        } else {
-                            table.back().push_back(buf);
-                        }
-                        break;
-                    }
-                    wstring buf = cur_str.substr(prev, found_i - prev);
-                    if (buf.empty()) return false;
-                    if (j == 0) {
-                        int64_t row_index = stoll(buf);
-                        rows[row_index] = rows_counter;
-                        std::vector<wstring> new_vector;
-                        table.push_back(new_vector);
-                        rows_counter++;
-                        rows_names.push_back(row_index);
-                    } else {
-                        if (buf[0] == TXT('=')) {
-                            table[i - 1].push_back(buf);
-                            struct table_ptr index{};
-                            index.column = table[i - 1].size() - 1;
-                            index.row = i - 1;
-                            calc_queue.push_front(index);
-                        } else {
-                            table[i - 1].push_back(buf);
-                        }
-                    }
-                    prev = found_i + 1;
-                }
+                bool is_valid = put_value(cur_str, rows_counter, max_row_sz, i);
+                if (!is_valid) return false;
             }
         }
+        table.shrink_to_fit();
         if (!rows.empty() && !columns.empty()) return true;
         else return false;
     }

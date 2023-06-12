@@ -11,14 +11,11 @@ namespace test_app {
 
     class app {
     public:
-        explicit app(char *filename) noexcept;
+        explicit app() = default;
 
         ~app() = default;
 
-        int start();
-
-    private:
-        std::wfstream file;
+        int start(const char *filename);
     };
 
 } // TestApp

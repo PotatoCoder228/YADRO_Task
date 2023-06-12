@@ -30,6 +30,14 @@ namespace test_app {
 
         void moveChain();
 
+        bool fill_clmns_names(std::wstring &str, std::size_t &max_row_sz);
+
+        void put_cell_value(std::wstring &buf, size_t &i);
+
+        void put_row_num(std::wstring &cur_str, size_t &rows_counter);
+
+        bool put_value(std::wstring &cur_str, size_t &rows_counter, size_t &max_row_sz, size_t &i);
+
         std::vector<std::vector<std::wstring>> table;
         std::map<std::wstring, std::size_t> columns;
         std::map<std::size_t, std::size_t> rows;

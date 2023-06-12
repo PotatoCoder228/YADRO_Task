@@ -35,6 +35,6 @@ int main(int argc, char *argv[]) {
         cout << "Program shut down..." << endl;
         return EXIT_FAILURE;
     }
-    test_app::app app(argv[1]);
-    return app.start();
+    test_app::app my_app;
+    return my_app.start(argv[1]);
 }
